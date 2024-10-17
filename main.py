@@ -1,31 +1,37 @@
+from cmath import *
+
 class CubicEq():
-    def __solution(args):
-        from numpy import roots
-        x = roots(args)
-        CubicEq.__check(x, args)
-        return x
 
-    def __check(x, args):
-        from numpy import around
-        a, b, c, d = args[0], args[1], args[2], args[3]
-        counter = 0
-        for i in x:
-            ans = around(a*(i**3) + b*(i**2) + c*i + d)
-            if ans == 0.0:
-                print(f'x{counter}: {around(i, 2)} - Проверенно')
-            counter += 1
+    def __roots(x):
+        y = set()
+        kor1 = x ** (1 / 3)
+        kor2 = (x ** (1 / 3)) * (-1 / 2 + (sqrt(3) * 1j) / 2)
+        kor3 = (x ** (1 / 3)) * (-1 / 2 - (sqrt(3) * 1j) / 2)
+        y.update({kor1, kor2, kor3})
+        return y
 
-    def Solve(*args):
-        try:
-            if len(args) == 0:
-                args = [float(i) for i in input('\nA B C D: ').split()]
-                CubicEq.__solution(args)
-            else:
-                return CubicEq.__solution([args[0], args[1], args[2], args[3]])
-        except:
-            print('Некорректный ввод')
+    def cubic(a, b, c, d):
+        y = set()
+        if a != 0:
+            p = (3 * a * c - b ** 2) / (3 * a ** 2)
+            q = (2 * b ** 3 - 9 * a * b * c + 27 * a ** 2 * d) / (27 * a ** 3)
+            x1 = CubicEq.__roots(-q / 2 + sqrt((q / 2) ** 2 + (p / 3) ** 3))
+            x2= CubicEq.__roots(-q / 2 - sqrt((q / 2) ** 2 + (p / 3) ** 3))
+            for i in x1:
+                for j in x2:
+                    if abs((i * j) + p / 3) <= 0.0000000001:
+                        x = i + j - b / (3 * a)
+                        print(f'Корень: {x} | Проверка: {abs((i * j) + p / 3)} \nкорень прошел проверку\n')
+                        y.add(x)
+        else:
+            print("отсутствует куб")
+        return  ""
 
 
-if __name__ == "__main__":
+try:
     while True:
-        CubicEq.Solve()
+        a, b, c, d = map(complex, input().split())
+        print(CubicEq.cubic(a, b, c, d))
+except:
+    print('введены не корректные значения')
+
